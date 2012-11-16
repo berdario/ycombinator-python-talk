@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>The Title Of Your Presentation</title>
+
+<!-- Your Slides -->
+<!-- One section is one slide -->
+
+<section>
+	<h1> Y combinator</h1>
+</section>
+
+<section>
+	<h1>combinator?</h1>
+
+</section>
+
+<section>
+	<h1>which one?</h1>
+</section>
+
+<section>
+	<img src="static cat.jpg" />
+</section>
+
+<section>
+	<img src="polymorphic cat.jpg" />
+</section>
+
+<section>
+<pre>def fac(n):
+	return 1 if n==0 else n*fac(n-1)
+</pre>
+</section>
+
+<section>
+<pre>fac = lambda n: 1 if n==0 else n*fac(n-1)
+</pre>
+</section>
+
+<section>
+	<img src="offseid.jpg" />
+</section>
+
+<section>
+<pre>almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n*f(n-1)
+</pre>
+</section>
+
+<section>
+<pre>does this work?
+
+my_factorial = almost_fac(factorial)
+
+
+my_factorial = almost_fac(my_factorial)
+</pre>
+
+<form id="skulpt">
+<textarea id="code" rows="6" cols="80">
+def factorial(n):
+	return 1 if n==0 else n*factorial(n-1)
+
+almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n*f(n-1)
+
+my_factorial = almost_fac(factorial)
+
+print my_factorial(6)
+</textarea><br>
+<button onclick="runit(this.form)" type="button">Run</button>
+<pre id="output"></pre>
+</form>
+</section>
+
+<section>
+<h3>but python isn't lazy!</h3>
+
+</section>
+
+<section>
+	<img src="eager.jpg" />
+</section>
+
+<section>
+<p><pre>identity = lambda x: x
+factorial0 = almost_fac(identity)
+
+</pre></p>
+</section>
+
+<section>
+<pre>factorial1 = almost_fac(factorial0)
+factorial2 = almost_fac(factorial1)</pre>
+
+<form id="skulpt">
+<textarea id="code" rows="6" cols="80">
+
+almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n*f(n-1)
+
+identity = lambda x: x
+factorial0 = almost_fac(identity)
+factorial1 = almost_fac(factorial0)
+factorial2 = almost_fac(factorial1)
+
+print factorial2(2)
+</textarea><br>
+<button onclick="runit(this.form)" type="button">Run</button>
+<pre id="output"></pre>
+</form>
+</section>
+
+<section>
+<pre>factorial2 = almost_fac(almost_fac(
+almost_fac(identity)))
+
+factorial_infinity = almost_fac(almost_fac(
+almost_fac(almost_fac(almost_fac(...)))))
+</pre>
+</section>
+
+<section>
+	<img class="wide" src="recurcat.gif" />
+</section>
+
+<section>
+<h2>fixpoint</h2>
+</section>
+
+<section>
+
+<h3>defined for functions that output the same type as their input</h3>
+</section>
+
+<section>
+<pre>cos()</pre>
+</section>
+
+<section>
+<pre>cos(0.73908513321516067)</pre>
+</section>
+
+<section>
+<pre>cos(0.73908513321516067)
+>>>0.73908513321516067</pre>
+</section>
+
+<section>
+<pre>cos(x) = x
+cos(cos(x)) = x
+cos(cos(cos(x))) = x
+</pre>
+</section>
+
+<section>
+	<img src="boxed cat.jpg" />
+</section>
+
+<section>
+<pre>fixpoint = almost_fac(fixpoint)
+
+fixpoint = almost_fac(almost_fac(fixpoint))
+</pre>
+</section>
+
+<section>
+<pre>fixpoint = almost_fac(almost_fac(
+	almost_fac(almost_fac(
+	almost_fac(...)))))
+
+
+Y(f) = f_fixpoint
+
+f_fixpoint = f(f_fixpoint)
+</pre>
+</section>
+
+<section>
+<pre>Y(f) = f(Y(f))
+
+Y = lambda f: f(Y(f))
+
+</pre>
+</section>
+
+<section>
+<pre>what is a valid python Y(f)?
+
+Y(f) = lambda x: Y(f)(x)
+
+Y(f) = f(lambda x: Y(f)(x))
+</pre>
+</section>
+
+<section>
+<pre>Y = lambda f: f(lambda x: Y(f)(x))
+
+
+almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n * f(n-1)
+
+factorial = Y(almost_fac)
+</pre>
+
+<form id="skulpt">
+<textarea id="code" rows="6" cols="80">
+Y = lambda f: f(lambda x: Y(f)(x))
+
+almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n * f(n-1)
+
+factorial = Y(almost_fac)
+
+print factorial(7)
+</textarea><br>
+<button onclick="runit(this.form)" type="button">Run</button>
+<pre id="output"></pre>
+</form>
+</section>
+
+<section>
+	<img src="flip concatmap.jpg" />
+</section>
+
+<!--<section>
+<pre>And for the combinator:
+
+
+factorial = (lambda f: f(lambda x: Y(f)(x))
+	) (almost_fac)
+</pre>
+</section>
+
+<section>
+<pre>factorial = almost_fac(
+	lambda x: Y(almost_fac)(x))
+
+factorial =  lambda n: \
+	1 if n==0 else n * (
+	lambda x: Y(almost_fac)(x))(n-1)
+
+</pre>
+</section>-->
+
+<section>
+<pre>Now to get to a proper Y combinator
+
+def fac(n):
+	return 1 if n==0 else n*fac(n-1)
+
+def quasi_fac(this, n):
+	return 1 if n==0 else n*this(this, n-1)
+
+quasi_fac(quasi_fac, 6) = 720
+</pre>
+</section>
+
+<section>
+<pre>def quasi_fac(this):
+	return lambda n:\
+		1 if n==0 else n*this(this)(n-1)
+
+quasi_fac(quasi_fac)(6) = 720
+
+factorial = quasi_fac(quasi_fac)
+</pre>
+</section>
+
+<section>
+<pre>def quasi_fac(this):
+	f = this(this)
+	return lambda n:\
+		1 if n==0 else n*f(n-1)
+
+def quasi_fac(this):
+	return (lambda f:\
+		lambda n:\
+			1 if n==0 else \
+			n*f(n-1))(this(this))
+</pre>
+
+</section>
+
+<section>
+<pre>almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n * f(n-1)
+
+def quasi_fac(this):
+	return almost_fac(this(this))
+
+x = quasi_fac = lambda this: almost_fac(this(this))
+</pre>
+</section>
+
+<section>
+<pre>def factorial():
+	x = lambda this: almost_fac(this(this))
+	return x(x)
+
+factorial = (lambda x: x(x))(lambda this:\
+	almost_fac(this(this)))
+
+factorial = (lambda x: x(x))(lambda x:\
+	almost_fac(x(x)))
+</pre>
+</section>
+
+<section>
+<pre>factorial = (lambda f:\
+	(lambda x: x(x))(lambda x:\
+		f(x(x))))(almost_fac)
+</pre>
+</section>
+
+<section>
+<pre>Y = lambda f:\
+	(lambda x: x(x))(lambda x:\
+		f(x(x)))
+
+Y = lambda f: (lambda x: x(x))(lambda x: f(x(x)))
+
+factorial = Y(almost_fac)
+</pre>
+</section>
+
+<section>
+<pre>def Y(f):
+	(lambda x: x(x))\
+	(lambda x: f(x(x)))
+
+def Y(f):
+	(lambda x: f(x(x)))\
+	(lambda x: f(x(x)))
+</pre>
+</section>
+
+<section>
+<pre>is Y(f) = f(Y(f)) correct?
+
+def Y(f):
+	f((lambda x: f(x(x)))\
+	(lambda x: f(x(x))))
+
+= f(Y(f))
+</pre>
+</section>
+
+<section>
+	<img src="explodid.jpg" />
+</section>
+
+<section>
+<pre>def quasi_fac(this):
+	f = this(this)
+	return lambda n:\
+		1 if n==0 else n*f(n-1)
+
+def quasi_fac(this):
+	f = lambda *args: this(this)(*args)
+	return lambda n:\
+		1 if n==0 else n*f(n-1)
+
+</pre>
+</section>
+
+<section>
+<pre>Y = lambda f:\
+	(lambda x: x(x))\
+	(lambda x: f(lambda *args: x(x)(*args)))
+
+Y = lambda f:\
+	(lambda x: f(lambda *args: x(x)(*args)))\
+	(lambda x: f(lambda *args: x(x)(*args)))
+
+</pre>
+
+<!--<form id="skulpt">
+<textarea id="code" rows="6" cols="80">
+Y = lambda f: (lambda x: f(lambda *args: x(x)(*args)))(lambda x: f(lambda *args: x(x)(*args)))
+
+almost_fac = lambda f: \
+	lambda n: \
+	1 if n==0 else n * f(n-1)
+
+factorial = Y(almost_fac)
+
+print factorial(6)
+</textarea><br>
+<button onclick="runit(this.form)" type="button">Run</button>
+<pre id="output"></pre>
+</form>-->
+</section>
+
+<section>
+	<img src="tail recursion.jpg" />
+</section>
+
+<section>
+<pre>def Ycache(f, cache={}):
+	def m(*args):
+		if args in cache:
+			return cache[args]
+		result = f(lambda *a: Ycache(f)(*a))
+		cache[args] = result
+		return result
+	return m</pre>
+</section>
+
+<section>
+	<h2>The End!</h2>
+</section>
+
+<div class="progress"><div></div></div>
+
+<!-- Your Style -->
+<!-- Define the style of you presentation -->
+
+<!-- Maybe a font from http://www.google.com/webfonts ? -->
+<link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+
+<style>
+html { background-color: black; }
+body { background-color: #326342; }
+/* A section is a slide. It's size is 800x600, and this will never change */
+section {
+	/* The font from Google */
+	font-family: 'Oswald', arial, serif;
+	font-size: 25px;
+	display: box;
+	display: -moz-box;
+	display: -webkit-box;
+	box-align: center;
+	-moz-box-align: center;
+	-webkit-box-align: center;
+	box-pack: center;
+	-moz-box-pack: center;
+	-webkit-box-pack: center;
+	box-orient: vertical;
+	-moz-box-orient: vertical;
+	-webkit-box-orient: vertical;
+}
+p, pre {
+	color: white;
+	font-weight: bolder;
+}
+h1, h2 {
+	text-align: center;
+	font-size: 80px;
+}
+h3 {
+	margin: 100px 0 50px 100px;
+}
+
+ul {
+	margin: 50px 200px;
+	display: block;
+}
+
+q {
+	display: inline-block;
+	width: 700px;
+	height: 600px;
+	background-color: black;
+	color: white;
+	font-size: 60px;
+	padding: 50px;
+}
+
+img, video {
+/* 	width: 100%; */
+	height: 100%;
+/* 	position: absolute; */
+/* 	top: 0; */
+	z-index: -1;
+}
+
+img.wide {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+#skulpt {
+	position: relative;
+	margin-top: 50px;
+}
+
+#code {
+	position: relative;
+	background-color: #487858;
+	border: none;
+}
+
+textarea#code ~ button {
+	position: absolute;
+	left: 93%;
+	bottom: 10px;
+	background: #487858;
+	padding: 2px;
+	border: 1px solid #234F32;
+	border-radius: 2px;
+}
+
+pre#output {
+	position: absolute;
+	color: black;
+	font-size: 13px;
+	font-weight: normal;
+}
+
+footer {
+	position: absolute;
+	bottom: 10px;
+	right: 20px;
+}
+
+/* Transition effect */
+/* Feel free to change the transition effect for original
+	animations. See here:
+	https://developer.mozilla.org/en/CSS/CSS_transitions
+	How to use CSS3 Transitions: */
+section {
+	-moz-transition: left 400ms linear 0s;
+	-webkit-transition: left 400ms linear 0s;
+	-ms-transition: left 400ms linear 0s;
+	transition: left 400ms linear 0s;
+}
+
+/* Before */
+section { left: -150%; }
+/* Now */
+section[aria-selected] { left: 0; }
+/* After */
+section[aria-selected] ~ section { left: +150%; }
+
+/* Increment zoom lists while retaining previous opacity */
+.zoom > * { opacity: 1; }
+.zoom > *[aria-selected] { font-size: 150%; opacity: 1; }
+.zoom > *[aria-selected] ~ * { opacity: 0.1; }
+
+/* Inplace substitution with list */
+.inplace > * { display: none; }
+.inplace > *[aria-selected] { display: block; }
+
+
+
+</style>
+
+
+<!-- {{{{ *****************  DZSlides CORE 2.0b1 *************************** -->
+<!-- *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- *********************************************************************** -->
+
+<!-- This block of code is not supposed to be edited, but if you want to change the behavior of the slides, feel free to hack it ;) -->
+
+<!-- Default Style -->
+<style>
+* { margin: 0; padding: 0; }
+details { display: none; }
+body {
+	width: 800px; height: 600px;
+	margin-left: -400px; margin-top: -300px;
+	position: absolute; top: 50%; left: 50%;
+	overflow: hidden;
+}
+html {
+	overflow: hidden;
+}
+section {
+	position: absolute;
+	pointer-events: none;
+	width: 100%; height: 100%;
+}
+section[aria-selected] { pointer-events: auto; }
+body { display: none; }
+body.loaded { display: block; }
+.incremental {visibility: hidden}
+.incremental[active] {visibility: visible}
+
+/* Progress */
+.progress {
+	position:absolute;
+	right:118px;
+	bottom:49px;
+	left:118px;
+	border-radius:7px;
+	border:2px solid rgba(255, 255, 255, 0.2);
+	}
+.progress DIV {
+	width:0;
+	height:10px;
+	border-radius:5px;
+	background:rgba(177, 177, 177, 0.4);
+	-webkit-transition:width 0.2s linear;
+	-moz-transition:width 0.2s linear;
+	-ms-transition:width 0.2s linear;
+	-o-transition:width 0.2s linear;
+	transition:width 0.2s linear;
+	}
+.progress-off {
+	z-index:1;
+	}
+</style>
+
+<script src="skulpt/dist/skulpt.js" type="text/javascript"></script>
+<script>
+var friendWindows = [];
+var idx, step;
+var slides;
+var progress;
+
+/* main() */
+
+window.onload = function() {
+	slides = document.querySelectorAll("body > section");
+	onhashchange();
+	document.body.className = "loaded";
+	setupTouchEvents();
+	onresize();
+	progress = document.querySelector('div.progress div');
+
+}
+
+/* Handle keys */
+
+window.onkeydown = function(e) {
+	// Don't intercept keyboard shortcuts
+	if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+	return;
+	}
+	if ( e.keyCode == 37 // left arrow
+	|| e.keyCode == 38 // up arrow
+	|| e.keyCode == 33 // page up
+	) {
+	e.preventDefault();
+	back();
+	}
+	if ( e.keyCode == 39 // right arrow
+	|| e.keyCode == 40 // down arrow
+	|| e.keyCode == 34 // page down
+	) {
+	e.preventDefault();
+	forward();
+	}
+	if (e.keyCode == 35) { // end
+	e.preventDefault();
+	end();
+	}
+	if (e.keyCode == 36) { // home
+	e.preventDefault();
+	start();
+	}
+
+	if ( e.keyCode == 32) { // space
+		e.preventDefault();
+		toggleContent();
+	}
+}
+
+/* Touch Events */
+
+function setupTouchEvents() {
+	var orgX, newX;
+	var tracking = false;
+
+	var db = document.body;
+	db.addEventListener("touchstart", start, false);
+	db.addEventListener("touchmove", move, false);
+
+	function start(e) {
+	e.preventDefault();
+	tracking = true;
+	orgX = e.changedTouches[0].pageX;
+	}
+
+	function move(e) {
+	if (!tracking) return;
+	newX = e.changedTouches[0].pageX;
+	if (orgX - newX > 100) {
+		tracking = false;
+		forward();
+	} else {
+		if (orgX - newX < -100) {
+		tracking = false;
+		back();
+		}
+	}
+	}
+}
+
+/* Adapt the size of the slides to the window */
+
+window.onresize = function() {
+	var db = document.body;
+	var sx = db.clientWidth / window.innerWidth;
+	var sy = db.clientHeight / window.innerHeight;
+	var transform = "scale(" + (1/Math.max(sx, sy)) + ")";
+	db.style.MozTransform = transform;
+	db.style.WebkitTransform = transform;
+	db.style.OTransform = transform;
+	db.style.msTransform = transform;
+	db.style.transform = transform;
+}
+function getDetails(idx) {
+	var s = document.querySelector("section:nth-of-type("+ idx +")");
+	var d = s.querySelector("details");
+	return d?d.innerHTML:"";
+}
+window.onmessage = function(e) {
+	var msg = e.data;
+	var win = e.source;
+	if (msg === "register") {
+	friendWindows.push(win);
+	win.postMessage(JSON.stringify({method: "registered", title: document.title, count: slides.length}), "*");
+	win.postMessage(JSON.stringify({method: "newslide", details: getDetails(idx), idx: idx}), "*");
+	return;
+	}
+	if (msg === "back") back();
+	if (msg === "forward") forward();
+	if (msg === "toggleContent") toggleContent();
+	// setSlide(42)
+	var r = /setSlide\((\d+)\)/.exec(msg);
+	if (r) {
+		setSlide(r[1]);
+	}
+}
+
+/* If a Video is present in this new slide, play it.
+	If a Video is present in the previous slide, stop it. */
+
+function toggleContent() {
+	var s = document.querySelector("section[aria-selected]");
+	if (s) {
+		var video = s.querySelector("video");
+		if (video) {
+			if (video.ended || video.paused) {
+				video.play();
+			} else {
+				video.pause();
+			}
+		}
+	}
+}
+
+/* If the user change the slide number in the URL bar, jump
+	to this slide. */
+
+function setCursor(aIdx, aStep) {
+	aStep = (aStep != 0 && typeof aStep !== "undefined") ? "." + aStep : "";
+	window.location.hash = "#" + aIdx + aStep;
+}
+window.onhashchange = function(e) {
+	var cursor = window.location.hash.split("#"), newidx = 1, newstep = 0;
+	if (cursor.length == 2) {
+	newidx = ~~cursor[1].split(".")[0];
+	newstep = ~~cursor[1].split(".")[1];
+	}
+	if (newidx != idx) setSlide(newidx);
+	setIncremental(newstep);
+}
+
+/* Slide controls */
+
+function back() {
+	if (idx == 1 && step == 0) return;
+	updateProgress(idx - 1);
+	if (step == 0)
+	setCursor(idx - 1, slides[idx - 2].querySelectorAll('.incremental > *').length);
+	else 
+	setCursor(idx, step - 1);
+}
+function forward() {
+	if (idx >= slides.length && step >= slides[idx - 1].querySelectorAll('.incremental > *').length) return;
+	updateProgress(idx + 1);
+	if (step >= slides[idx - 1].querySelectorAll('.incremental > *').length)
+	setCursor(idx + 1, 0);
+	else
+	setCursor(idx, step + 1);
+}
+function start() {
+	setCursor(1, 0);
+}
+function end() {
+	var lastIdx = slides.length;
+	var lastStep = slides[lastIdx - 1].querySelectorAll('.incremental > *').length;
+	setCursor(lastIdx, lastStep);
+}
+
+function setSlide(aIdx) {
+	idx = aIdx;
+	var old = document.querySelector("section[aria-selected]");
+	var next = document.querySelector("section:nth-of-type("+ idx +")");
+	if (old) {
+	old.removeAttribute("aria-selected");
+	var video = old.querySelector("video");
+	if (video) { video.pause(); }
+	}
+	if (next) {
+	next.setAttribute("aria-selected", "true");
+	var video = next.querySelector("video");
+	if (video) { video.play(); }
+	updateProgress(idx);
+	} else {
+	idx = 0;
+	for (var i = 0, l = slides.length; i < l; i++) {
+		if (slides[i].hasAttribute("aria-selected")) {
+			idx = i + 1;
+		}
+	}
+	}
+	for (var i = 0, l = friendWindows.length; i < l; i++) {
+		friendWindows[i].postMessage(JSON.stringify({method: "newslide", details: getDetails(idx), idx: idx}), "*");
+	}
+}
+function setIncremental(aStep) {
+	step = aStep;
+	var old = slides[idx-1].querySelector('.incremental > *[aria-selected]');
+	if (old)
+	old.removeAttribute('aria-selected');
+	var incrementals = slides[idx-1].querySelectorAll('.incremental');
+	if (step == 0) {
+	for (var i = 0; i < incrementals.length; i++) {
+		incrementals[i].removeAttribute('active');
+	}
+	return;
+	}
+	var next = slides[idx-1].querySelectorAll('.incremental > *')[step-1];
+	if (next) {
+	next.setAttribute('aria-selected', true);
+	next.parentNode.setAttribute('active', true);
+	var found = false;
+	for (var i = 0; i < incrementals.length; i++) {
+		if (incrementals[i] != next.parentNode)
+		if (found)
+			incrementals[i].removeAttribute('active');
+		else
+			incrementals[i].setAttribute('active', true);
+		else
+		found = true;
+	}
+	} else {
+	setCursor(idx, 0);
+	}
+	return next;
+}
+
+function updateProgress(slide_number) {
+	if (!progress) return;
+	progress.style.width = (100 / (slides.length - 1) * normalizeSlideNumber(slide_number)).toFixed(2) + '%';
+}
+
+function normalizeSlideNumber(slide_number) {
+	slide_number--;
+	if (0 > slide_number) {
+		return slides.length - 1;
+	} else if (slides.length <= slide_number) {
+		return 0;
+	} else {
+		return slide_number;
+	}
+}
+
+Function.prototype.partial = function(){
+	var fn = this, args = Array.prototype.slice.call(arguments);
+	var flag = true;
+	return function(){
+	var arg = 0;
+	for ( var i = 0; i < args.length && arg < arguments.length; i++ )
+		if ( args[i] === undefined )
+		args[i] = arguments[arg++];
+	if (flag){
+		flag = false;
+		return fn.apply(this, args);
+	}
+	};
+};
+
+function outf(form, text)
+{
+	var output = form.querySelector("#output");
+	text = text.replace(/</g, '&lt;');
+	output.innerHTML = output.innerHTML + text;
+}
+
+function runit(form)
+{
+	var prog = form.code.value;
+	var output = form.querySelector("#output");
+	output.innerHTML = '';
+	Sk.configure({output:outf.partial(form, undefined)});
+	try {
+		var module = Sk.importMainWithBody("<stdin>", false, prog);
+	} catch (e) {
+		alert(e);
+	}
+}
+
+</script>
